@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <usb-accessory
+        manufacturer="AttesTux"
+        model="AttesTux Linux Attester"
+        version="1" />
+    <accessory-info
+        description="TPM 2.0 attestation"
+        uri="https://github.com/attestux"
+        serial="attestux-v1" />
+</resources>

@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package attestux.v1;
+
+option java_multiple_files = true;
+option java_package = "com.github.attestux.protocol.v1";
+
+message AttestationChallenge {
+  bytes nonce = 1;
+}
+
+message Quote {
+  bytes quote = 1;
+  bytes signature = 2;
+}
+
+message Pcr {
+  uint32 index = 1;
+  bytes digest = 2;
+}
+
+message PcrBankEvidence {
+  uint32 hash_algorithm = 1;
+  Quote quote = 2;
+  repeated Pcr pcrs = 3;
+}
+
+message EndorsementKey {
+  bytes public_key = 1;
+  bytes certificate = 2;
+}
+
+message AttestationEvidence {
+  bytes attestation_public = 1;
+  repeated PcrBankEvidence pcr_banks = 2;
+  bytes event_log = 3;
+  bytes ak_create_data = 4;
+  bytes ak_create_attestation = 5;
+  bytes ak_create_signature = 6;
+  repeated EndorsementKey endorsement_keys = 7;
+}
+
+message CredentialActivationChallenge {
+  bytes endorsement_key_sha256 = 1;
+  bytes credential = 2;
+  bytes encrypted_secret = 3;
+}
+
+message CredentialActivationResponse {
+  bytes secret = 1;
+}
+
+enum VerificationStatus {
+  VERIFICATION_STATUS_UNSPECIFIED = 0;
+  VERIFICATION_STATUS_PENDING_ACTIVATION = 1;
+  VERIFICATION_STATUS_VERIFIED = 2;
+  VERIFICATION_STATUS_FAILED = 3;
+}
+
+enum TrustPolicy {
+  TRUST_POLICY_UNSPECIFIED = 0;
+  TRUST_POLICY_NUVOTON = 1;
+  TRUST_POLICY_ATTESTUX_SIMULATOR = 2;
+}
+
+message VerificationReceipt {
+  string device_id = 1;
+  repeated string errors = 2;
+  bytes evidence_sha256 = 3;
+  TrustPolicy trust_policy = 4;
+  VerificationStatus status = 5;
+}
+
+enum ProtocolErrorCode {
+  PROTOCOL_ERROR_CODE_UNSPECIFIED = 0;
+  PROTOCOL_ERROR_CODE_UNEXPECTED_MESSAGE = 1;
+  PROTOCOL_ERROR_CODE_INVALID_CHALLENGE = 2;
+  PROTOCOL_ERROR_CODE_ATTESTATION_FAILED = 3;
+  PROTOCOL_ERROR_CODE_INTERNAL = 4;
+  PROTOCOL_ERROR_CODE_ACTIVATION_FAILED = 5;
+  PROTOCOL_ERROR_CODE_DEVICE_MISMATCH = 6;
+}
+
+message ProtocolError {
+  ProtocolErrorCode code = 1;
+  string message = 2;
+}

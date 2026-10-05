@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package attestux.v1;
+
+import "attestux/v1/wire.proto";
+
+option java_multiple_files = true;
+option java_package = "com.github.attestux.protocol.v1";
+
+enum VerificationState {
+  VERIFICATION_STATE_UNSPECIFIED = 0;
+  VERIFICATION_STATE_VERIFIED = 1;
+  VERIFICATION_STATE_UNVERIFIED = 2;
+  VERIFICATION_STATE_FAILED = 3;
+}
+
+message EventDigest {
+  bytes digest = 1;
+  VerificationState state = 2;
+  uint32 hash_algorithm = 3;
+}
+
+message Event {
+  uint32 sequence = 1;
+  uint32 pcr_index = 2;
+  uint32 event_type = 3;
+  string event_type_name = 4;
+  bytes data = 5;
+  string decoded = 6;
+  repeated EventDigest digests = 7;
+}
+
+message PcrResult {
+  Pcr pcr = 1;
+  // If replay succeeds with zero events, the PCR hasn't left its initial value.
+  bool event_log_replayed = 2;
+  uint32 hash_algorithm = 3;
+  uint32 replayed_event_count = 4;
+  // Replay needed synthetic events that weren't in the received log.
+  bool replay_used_unlogged_events = 5;
+}
+
+message VerificationReport {
+  string device_id = 1;
+  repeated PcrResult pcrs = 2;
+  repeated Event events = 3;
+  repeated string warnings = 4;
+  repeated string errors = 5;
+  bytes evidence_sha256 = 6;
+  TrustPolicy trust_policy = 7;
+  VerificationStatus status = 8;
+  // Parsing problems, bad entries, or report limits kept us from normalizing the full log.
+  bool event_log_incomplete = 9;
+  // How many entries were left out, if we know the count.
+  uint32 omitted_event_count = 10;
+  // SHA-256 of the accepted EK's canonical PKIX DER public key.
+  bytes endorsement_key_sha256 = 11;
+  // Policy and format limitations that don't change from scan to scan.
+  repeated string limitations = 12;
+}
+
+message VerificationCompletion {
+  VerificationReport report = 1;
+  VerificationReceipt receipt = 2;
+}
+
+message PendingVerification {
+  VerificationReport report = 1;
+  CredentialActivationChallenge activation_challenge = 2;
+}
+
+message VerificationPreparation {
+  oneof result {
+    PendingVerification pending = 1;
+    VerificationCompletion completion = 2;
+  }
+}
