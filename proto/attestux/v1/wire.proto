@@ -85,3 +85,17 @@ message ProtocolError {
   ProtocolErrorCode code = 1;
   string message = 2;
 }
+
+// One USB frame behind a big-endian u32 length. The payload limits are
+// 32 MiB for evidence and 64 KiB for everything else.
+message Frame {
+  oneof payload {
+    AttestationChallenge challenge = 1;
+    // Encoded AttestationEvidence, kept intact for the receipt hash.
+    bytes evidence = 2;
+    CredentialActivationChallenge activation_challenge = 3;
+    CredentialActivationResponse activation_response = 4;
+    VerificationReceipt receipt = 5;
+    ProtocolError error = 6;
+  }
+}
