@@ -1,22 +1,24 @@
+// Verification results returned by the Go verifier to the Android app; nothing in this file crosses USB.
 syntax = "proto3";
 
-package attestux.v1;
+package attestux.result.v1;
 
 import "attestux/v1/wire.proto";
 
 option java_multiple_files = true;
-option java_package = "com.github.attestux.protocol.v1";
+option java_package = "com.github.attestux.protocol.result.v1";
+option go_package = "github.com/attestux/protocol-go/attestux/result/v1;resultv1";
 
-enum VerificationState {
-  VERIFICATION_STATE_UNSPECIFIED = 0;
-  VERIFICATION_STATE_VERIFIED = 1;
-  VERIFICATION_STATE_UNVERIFIED = 2;
-  VERIFICATION_STATE_FAILED = 3;
+enum ReplayState {
+  REPLAY_STATE_UNSPECIFIED = 0;
+  REPLAY_STATE_VERIFIED = 1;
+  REPLAY_STATE_UNVERIFIED = 2;
+  REPLAY_STATE_FAILED = 3;
 }
 
 message EventDigest {
   bytes digest = 1;
-  VerificationState state = 2;
+  ReplayState state = 2;
   uint32 hash_algorithm = 3;
 }
 
@@ -31,7 +33,7 @@ message Event {
 }
 
 message PcrResult {
-  Pcr pcr = 1;
+  attestux.v1.Pcr pcr = 1;
   // If replay succeeds with zero events, the PCR hasn't left its initial value.
   bool event_log_replayed = 2;
   uint32 hash_algorithm = 3;
@@ -46,9 +48,10 @@ message VerificationReport {
   repeated Event events = 3;
   repeated string warnings = 4;
   repeated string errors = 5;
+  // Hash of the raw evidence response, or raw AttestationHello if no quote arrived.
   bytes evidence_sha256 = 6;
-  TrustPolicy trust_policy = 7;
-  VerificationStatus status = 8;
+  attestux.v1.TrustPolicy trust_policy = 7;
+  attestux.v1.VerificationStatus status = 8;
   // Parsing problems, bad entries, or report limits kept us from normalizing the full log.
   bool event_log_incomplete = 9;
   // How many entries were left out, if we know the count.
@@ -61,12 +64,12 @@ message VerificationReport {
 
 message VerificationCompletion {
   VerificationReport report = 1;
-  VerificationReceipt receipt = 2;
+  attestux.v1.VerificationReceipt receipt = 2;
 }
 
 message PendingVerification {
   VerificationReport report = 1;
-  CredentialActivationChallenge activation_challenge = 2;
+  attestux.v1.CredentialActivationChallenge activation_challenge = 2;
 }
 
 message VerificationPreparation {

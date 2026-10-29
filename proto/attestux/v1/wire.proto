@@ -4,12 +4,29 @@ package attestux.v1;
 
 option java_multiple_files = true;
 option java_package = "com.github.attestux.protocol.v1";
+option go_package = "github.com/attestux/protocol-go/attestux/v1;attestuxv1";
 
 message AttestationChallenge {
-  bytes nonce = 1;
+  // Requests key discovery. The quote challenge is delivered by credential activation.
+  // Version 1 uses activation followed by a quote over SHA-256(secret).
+  uint32 protocol_version = 1;
+}
+
+// Initial prover response; future optional session capabilities belong here.
+message AttestationHello {
+  AttestationKeys keys = 1;
+}
+
+message AttestationKeys {
+  bytes attestation_public = 1;
+  bytes ak_create_data = 2;
+  bytes ak_create_attestation = 3;
+  bytes ak_create_signature = 4;
+  repeated EndorsementKey endorsement_keys = 5;
 }
 
 message Quote {
+  // extraData is SHA-256 of the recovered activation secret, never the secret itself.
   bytes quote = 1;
   bytes signature = 2;
 }
@@ -31,23 +48,15 @@ message EndorsementKey {
 }
 
 message AttestationEvidence {
-  bytes attestation_public = 1;
+  AttestationKeys keys = 1;
   repeated PcrBankEvidence pcr_banks = 2;
   bytes event_log = 3;
-  bytes ak_create_data = 4;
-  bytes ak_create_attestation = 5;
-  bytes ak_create_signature = 6;
-  repeated EndorsementKey endorsement_keys = 7;
 }
 
 message CredentialActivationChallenge {
   bytes endorsement_key_sha256 = 1;
   bytes credential = 2;
   bytes encrypted_secret = 3;
-}
-
-message CredentialActivationResponse {
-  bytes secret = 1;
 }
 
 enum VerificationStatus {
@@ -66,6 +75,7 @@ enum TrustPolicy {
 message VerificationReceipt {
   string device_id = 1;
   repeated string errors = 2;
+  // Hash of the raw evidence response, or raw AttestationHello on early rejection.
   bytes evidence_sha256 = 3;
   TrustPolicy trust_policy = 4;
   VerificationStatus status = 5;
@@ -81,6 +91,11 @@ enum ProtocolErrorCode {
   PROTOCOL_ERROR_CODE_DEVICE_MISMATCH = 6;
 }
 
+// Final verifier response; future optional session selection belongs here.
+message AttestationResult {
+  VerificationReceipt receipt = 1;
+}
+
 message ProtocolError {
   ProtocolErrorCode code = 1;
   string message = 2;
@@ -94,8 +109,9 @@ message Frame {
     // Encoded AttestationEvidence, kept intact for the receipt hash.
     bytes evidence = 2;
     CredentialActivationChallenge activation_challenge = 3;
-    CredentialActivationResponse activation_response = 4;
-    VerificationReceipt receipt = 5;
+    // Encoded AttestationHello, retained intact if verification fails before quoting.
+    bytes hello = 4;
+    AttestationResult result = 5;
     ProtocolError error = 6;
   }
 }
