@@ -68,8 +68,7 @@ message VerificationCompletion {
 }
 
 message PendingVerification {
-  VerificationReport report = 1;
-  attestux.v1.CredentialActivationChallenge activation_challenge = 2;
+  attestux.v1.CredentialActivationChallenge activation_challenge = 1;
 }
 
 message VerificationPreparation {
