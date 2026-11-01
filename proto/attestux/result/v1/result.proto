@@ -67,13 +67,9 @@ message VerificationCompletion {
   attestux.v1.VerificationReceipt receipt = 2;
 }
 
-message PendingVerification {
-  attestux.v1.CredentialActivationChallenge activation_challenge = 1;
-}
-
 message VerificationPreparation {
   oneof result {
-    PendingVerification pending = 1;
+    attestux.v1.CredentialActivationChallenge activation_challenge = 1;
     VerificationCompletion completion = 2;
   }
 }

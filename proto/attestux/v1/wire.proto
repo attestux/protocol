@@ -43,8 +43,7 @@ message PcrBankEvidence {
 }
 
 message EndorsementKey {
-  bytes public_key = 1;
-  bytes certificate = 2;
+  bytes certificate = 1;
 }
 
 message AttestationEvidence {
