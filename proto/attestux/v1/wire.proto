@@ -72,12 +72,9 @@ enum TrustPolicy {
 }
 
 message VerificationReceipt {
-  string device_id = 1;
-  repeated string errors = 2;
-  // Hash of the raw evidence response, or raw AttestationHello on early rejection.
-  bytes evidence_sha256 = 3;
-  TrustPolicy trust_policy = 4;
-  VerificationStatus status = 5;
+  repeated string errors = 1;
+  TrustPolicy trust_policy = 2;
+  VerificationStatus status = 3;
 }
 
 enum ProtocolErrorCode {
@@ -105,7 +102,7 @@ message ProtocolError {
 message Frame {
   oneof payload {
     AttestationChallenge challenge = 1;
-    // Encoded AttestationEvidence, kept intact for the receipt hash.
+    // Encoded AttestationEvidence, retained intact with the verification report.
     bytes evidence = 2;
     CredentialActivationChallenge activation_challenge = 3;
     // Encoded AttestationHello, retained intact if verification fails before quoting.
