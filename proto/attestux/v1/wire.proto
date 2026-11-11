@@ -15,6 +15,8 @@ message AttestationChallenge {
 // Initial prover response; future optional session capabilities belong here.
 message AttestationHello {
   AttestationKeys keys = 1;
+  // Fresh random 32-byte value for this prover exchange
+  bytes prover_nonce = 2;
 }
 
 message AttestationKeys {
@@ -56,6 +58,8 @@ message CredentialActivationChallenge {
   bytes endorsement_key_sha256 = 1;
   bytes credential = 2;
   bytes encrypted_secret = 3;
+  // Echoes AttestationHello.prover_nonce; check before using the TPM
+  bytes prover_nonce = 4;
 }
 
 enum VerificationStatus {
@@ -90,11 +94,14 @@ enum ProtocolErrorCode {
 // Final verifier response; future optional session selection belongs here.
 message AttestationResult {
   VerificationReceipt receipt = 1;
+  bytes prover_nonce = 2;
 }
 
 message ProtocolError {
   ProtocolErrorCode code = 1;
   string message = 2;
+  // Echoes the hello's nonce once the session is known
+  bytes prover_nonce = 3;
 }
 
 // One USB frame behind a big-endian u32 length. The payload limits are
