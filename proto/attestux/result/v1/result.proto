@@ -34,9 +34,10 @@ message Event {
 
 message PcrResult {
   attestux.v1.Pcr pcr = 1;
-  // If replay succeeds with zero events, the PCR hasn't left its initial value
+  // True if replay reproduces the PCR digest
   bool event_log_replayed = 2;
   uint32 hash_algorithm = 3;
+  // If event_log_replayed is true, zero means the PCR remains at its initial value
   uint32 replayed_event_count = 4;
   // Replay needed synthetic events that weren't in the received log
   bool replay_used_unlogged_events = 5;
@@ -48,7 +49,7 @@ message VerificationReport {
   repeated Event events = 3;
   repeated string warnings = 4;
   repeated string errors = 5;
-  // Hash of the raw evidence response or raw AttestationHello if no quote arrived.
+  // Hash of the raw evidence response or raw AttestationHello if no evidence arrived
   bytes evidence_sha256 = 6;
   attestux.v1.TrustPolicy trust_policy = 7;
   attestux.v1.VerificationStatus status = 8;
