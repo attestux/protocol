@@ -110,7 +110,7 @@ message ProtocolError {
 message Frame {
   oneof payload {
     AttestationChallenge challenge = 1;
-    // Encoded AttestationEvidence, kept intact for the receipt hash
+    // Encoded AttestationEvidence, retained intact with the verification report
     bytes evidence = 2;
     CredentialActivationChallenge activation_challenge = 3;
     // Encoded AttestationHello, retained intact if verification fails before quoting
