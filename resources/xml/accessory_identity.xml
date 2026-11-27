@@ -4,9 +4,8 @@
         manufacturer="AttesTux"
         model="AttesTux Linux Attester"
         version="1" />
-    <!-- TODO: switch to own domain -->
     <accessory-info
         description="TPM 2.0 attestation"
-        uri="https://github.com/attestux"
+        uri="https://attestux.com/"
         serial="attestux-v1" />
 </resources>

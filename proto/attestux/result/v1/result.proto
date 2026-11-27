@@ -6,7 +6,7 @@ package attestux.result.v1;
 import "attestux/v1/wire.proto";
 
 option java_multiple_files = true;
-option java_package = "com.github.attestux.protocol.result.v1";
+option java_package = "com.attestux.protocol.result.v1";
 option go_package = "github.com/attestux/protocol-go/attestux/result/v1;resultv1";
 
 enum ReplayState {
